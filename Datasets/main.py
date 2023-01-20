@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Query, HTTPException
+from deta import Deta
 import pandas as pd
 
 app = FastAPI()
-
+deta = Deta("b0068oep_sBcnQg29Pc4m1ytpnzghxE4HKmpRFncq")
+# drive = deta.Drive("images")
 @app.get("/")
 def read_root():
     return {"Hello, in platform just acept ": {"amazon", "amazon_prime", "disney_plus", "hulu", "netflix"}}
