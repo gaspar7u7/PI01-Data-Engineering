@@ -5,7 +5,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello, in platform just acept ": {"amazon", "amazon_prime", "disney_plus", "hulu", "netflix"}}
 
 @app.get("/word_count/{platform}/{word}")
 async def get_word_count(platform: str, word: str):
@@ -17,17 +17,13 @@ async def get_word_count(platform: str, word: str):
 async def get_score_count(platform: str, score: int, year: int):
     df = pd.read_csv(f"{platform}_titles-score.csv")
     score_count = df[(df["score"] > score) & (df["release_year"] == year)].shape[0]
-    return {"platform": platform, "score_count": score_count}
+    return {"platform": platform, "score_count": int(score_count)}
 
-
-@app.get("/get_second_score/{platform}")
+@app.get("/second_score/{platform}")
 def get_second_score(platform: str):
-    dataframe = pd.read_csv(f"{platform}_titles-score.csv")
-    dataframe = dataframe.sort_values(by=["title"])
-    dataframe = dataframe.sort_values(by=["score"], ascending=False)
-    second_score = dataframe.iloc[1]["title"]
-    score = dataframe.iloc[1]["score"]
-    return {"title": second_score, "score": score}
+    df = pd.read_csv(f"{platform}_titles-score.csv")
+    second_score = df.sort_values(by=["score", "title"], ascending=[False, True]).iloc[1]
+    return {"title": second_score["title"], "score": int(second_score["score"])}
 
 @app.get("/get_longest/{platform}/{duration_type}/{year}")
 def get_longest(platform: str, duration_type: str, year: int):
@@ -40,6 +36,6 @@ def get_longest(platform: str, duration_type: str, year: int):
 
 @app.get("/get_rating_count/{rating}")
 def get_rating_count(rating: str):
-    dataframe = pd.concat([pd.read_csv(f) for f in ["amazon_titles-score.csv", "hulu_titles-score.csv", "netflix_titles-score.csv"]])
-    count = dataframe[dataframe["rating"] == rating]["rating"].count()
+    dataframe = pd.concat([pd.read_csv(f) for f in ["amazon_prime_titles-score.csv", "hulu_titles-score.csv", "netflix_titles-score.csv", "disney_plus_titles-score.csv"]])
+    count = int(dataframe[dataframe["rating"] == rating]["rating"].count())
     return {"rating": rating, "count": count}
